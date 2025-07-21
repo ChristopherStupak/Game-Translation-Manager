@@ -275,3 +275,18 @@ h1 {
         margin: 2px 0;
     }
 }
+
+.footer {
+    margin-top: 30px;
+    padding: 20px;
+    text-align: center;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-top: 2px solid #e9ecef;
+}
+
+    .footer p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 14px;
+    }
