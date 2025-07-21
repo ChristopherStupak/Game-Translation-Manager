@@ -76,49 +76,64 @@ function parseCSVData(csvText) {
         throw new Error('CSV file must have at least a header row and one data row');
     }
 
-    // Parse header
+    // Parse header - case insensitive detection
     const headers = parseCSVLine(lines[0]);
-    const contextIndex = headers.findIndex(h => h.includes('CONTEXT'));
 
+    // Find Context column (any column containing "context")
+    let contextIndex = headers.findIndex(h => {
+        const lower = h.toLowerCase().trim();
+        return lower.includes('context');
+    });
+
+    // If no context column, use first non-empty column as ID
     if (contextIndex === -1) {
-        throw new Error('CSV must have a CONTEXT column');
+        contextIndex = 0; // Use first column as fallback
     }
 
-    // Find language columns
+    // Find language columns - exact match with expected headers
     const languageColumns = {};
     headers.forEach((header, index) => {
         const cleanHeader = header.trim();
+        // Exact match with our language map
         if (csvColumnMap[cleanHeader]) {
             languageColumns[csvColumnMap[cleanHeader]] = index;
         }
     });
 
     if (Object.keys(languageColumns).length === 0) {
-        throw new Error('No supported language columns found');
+        throw new Error('No supported language columns found. Expected: EN, DE, ES, FR, IT, BR PT, RU');
     }
 
     // Parse data rows
     const strings = [];
     for (let i = 1; i < lines.length; i++) {
         const row = parseCSVLine(lines[i]);
-        if (row.length <= contextIndex) continue;
+        if (row.length <= Math.max(contextIndex, ...Object.values(languageColumns))) continue;
 
-        // Use row index as ID if CONTEXT is empty/null
+        // Skip empty rows
+        const hasContent = Object.values(languageColumns).some(colIndex => row[colIndex]?.trim());
+        if (!hasContent) continue;
+
+        // Generate ID from context or row number
         let id = row[contextIndex]?.trim();
         if (!id || id === 'null' || id === '') {
-            id = `translation_${i}`; // Generate unique ID for empty rows
+            id = `translation_${i}`;
         }
 
         const stringObj = { id };
 
-        // Add translations for each language
+        // Add translations for detected languages only
         Object.entries(languageColumns).forEach(([lang, colIndex]) => {
-            if (row[colIndex]) {
-                stringObj[lang] = row[colIndex].trim();
+            const translation = row[colIndex]?.trim();
+            if (translation) {
+                stringObj[lang] = translation;
             }
         });
 
-        strings.push(stringObj);
+        // Only add if has at least one translation
+        if (Object.keys(stringObj).length > 1) {
+            strings.push(stringObj);
+        }
     }
 
     translationData.stringresources.strings.string = strings;
