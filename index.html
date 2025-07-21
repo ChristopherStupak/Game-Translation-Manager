@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Translation Manager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🌍 Game Translation Manager</h1>
+
+        <!-- Import Section -->
+        <div class="section">
+            <h3>📥 Import Translations</h3>
+            <p>Import translations from Google Sheets CSV export or existing JSON files.</p>
+
+            <div class="button-group">
+                <div class="file-input-wrapper">
+                    <input type="file" id="csvFile" class="file-input" accept=".csv" />
+                    <label for="csvFile" class="file-label">📊 Import CSV from Google Sheets</label>
+                </div>
+
+                <div class="file-input-wrapper">
+                    <input type="file" id="jsonFile" class="file-input" accept=".json" />
+                    <label for="jsonFile" class="file-label">📄 Import JSON File</label>
+                </div>
+
+                <button class="button button-danger" onclick="clearData()">🗑️ Clear All</button>
+            </div>
+
+            <div id="importStatus"></div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="section">
+            <h3>📊 Translation Statistics</h3>
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalKeys">0</div>
+                    <div class="stat-label">Translation Keys</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalLanguages">0</div>
+                    <div class="stat-label">Languages</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTranslations">0</div>
+                    <div class="stat-label">Total Translations</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="missingTranslations">0</div>
+                    <div class="stat-label">Missing</div>
+                </div>
+            </div>
+
+            <div id="languageList" class="language-grid"></div>
+        </div>
+
+        <!-- Preview Section -->
+        <div class="section">
+            <h3>👀 Translation Preview</h3>
+            <div id="previewContainer">
+                <p>Import a file to see translation preview...</p>
+            </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="section">
+            <h3>📤 Export Translations</h3>
+            <p>Export translations in your game's JSON format or as CSV for Google Sheets.</p>
+
+            <div class="button-group">
+                <button class="button button-primary" onclick="exportGameJSON()">🎮 Export Game JSON</button>
+                <button class="button button-secondary" onclick="exportCSV()">📊 Export CSV for Sheets</button>
+                <button class="button button-secondary" onclick="copyToClipboard()">📋 Copy JSON to Clipboard</button>
+            </div>
+
+            <textarea id="exportOutput" class="textarea" placeholder="Exported data will appear here..." readonly></textarea>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
