@@ -103,8 +103,11 @@ function parseCSVData(csvText) {
         const row = parseCSVLine(lines[i]);
         if (row.length <= contextIndex) continue;
 
-        const id = row[contextIndex]?.trim();
-        if (!id) continue;
+        // Use row index as ID if CONTEXT is empty/null
+        let id = row[contextIndex]?.trim();
+        if (!id || id === 'null' || id === '') {
+            id = `translation_${i}`; // Generate unique ID for empty rows
+        }
 
         const stringObj = { id };
 
@@ -228,9 +231,8 @@ function updatePreview() {
     });
     html += '</tr></thead><tbody>';
 
-    // Show first 20 translations
-    const displayStrings = strings.slice(0, 20);
-    displayStrings.forEach(str => {
+    // Show all translations
+    strings.forEach(str => {
         html += '<tr>';
         html += `<td title="${str.id}">${str.id}</td>`;
         languages.forEach(lang => {
@@ -241,10 +243,6 @@ function updatePreview() {
     });
 
     html += '</tbody></table>';
-
-    if (strings.length > 20) {
-        html += `<p><em>Showing first 20 of ${strings.length} translations...</em></p>`;
-    }
 
     container.innerHTML = html;
 }
