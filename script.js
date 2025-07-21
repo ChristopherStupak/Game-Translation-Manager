@@ -17,7 +17,7 @@ const supportedLanguages = {
     'ru': 'Russian'
 };
 
-// CSV column mapping
+// CSV column mapping - exact order from your template
 const csvColumnMap = {
     'EN': 'en',
     'DE': 'de',
@@ -27,6 +27,9 @@ const csvColumnMap = {
     'BR PT': 'br',
     'RU': 'ru'
 };
+
+// Language order for CSV export
+const csvLanguageOrder = ['en', 'de', 'es', 'fr', 'it', 'br', 'ru'];
 
 // File input handlers
 document.getElementById('csvFile').addEventListener('change', handleCSVImport);
@@ -189,7 +192,8 @@ function updateLanguageList() {
     const container = document.getElementById('languageList');
     container.innerHTML = '';
 
-    Array.from(languages).sort().forEach(lang => {
+    // Use csvLanguageOrder instead of sorting alphabetically
+    csvLanguageOrder.filter(lang => languages.has(lang)).forEach(lang => {
         const tag = document.createElement('div');
         tag.className = 'language-tag';
         tag.textContent = `${lang.toUpperCase()} - ${supportedLanguages[lang]}`;
@@ -206,7 +210,7 @@ function updatePreview() {
         return;
     }
 
-    // Get available languages
+    // Get available languages in correct order
     const availableLanguages = new Set();
     strings.forEach(str => {
         Object.keys(supportedLanguages).forEach(lang => {
@@ -214,7 +218,8 @@ function updatePreview() {
         });
     });
 
-    const languages = Array.from(availableLanguages).sort();
+    // Filter csvLanguageOrder to only include available languages
+    const languages = csvLanguageOrder.filter(lang => availableLanguages.has(lang));
 
     let html = '<table class="preview-table"><thead><tr>';
     html += '<th style="width: 200px;">Key</th>';
@@ -268,28 +273,13 @@ function exportCSV() {
         return;
     }
 
-    // Get all available languages
-    const availableLanguages = new Set();
-    strings.forEach(str => {
-        Object.keys(supportedLanguages).forEach(lang => {
-            if (str[lang]) availableLanguages.add(lang);
-        });
-    });
+    // Create CSV header in exact order
+    let csv = 'CONTEXT – PLEASE, LOOK HERE FOR SPECIFICATIONS,EN,DE,ES,FR,IT,BR PT,RU\n';
 
-    const languages = Array.from(availableLanguages).sort();
-
-    // Create CSV header
-    let csv = 'CONTEXT – PLEASE, LOOK HERE FOR SPECIFICATIONS';
-    languages.forEach(lang => {
-        const csvLang = Object.keys(csvColumnMap).find(key => csvColumnMap[key] === lang) || lang.toUpperCase();
-        csv += ',' + csvLang;
-    });
-    csv += '\n';
-
-    // Add data rows
+    // Add data rows in exact language order
     strings.forEach(str => {
         csv += `"${str.id}"`;
-        languages.forEach(lang => {
+        csvLanguageOrder.forEach(lang => {
             const translation = (str[lang] || '').replace(/"/g, '""');
             csv += `,"${translation}"`;
         });
