@@ -206,6 +206,7 @@ h1 {
     max-height: 300px;
     overflow-y: auto;
     display: block;
+    table-layout: fixed;
 }
 
     .preview-table thead,
@@ -223,7 +224,13 @@ h1 {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        width: 14.28%; /* Equal width for all columns (100% / 7 columns) */
     }
+
+        .preview-table th:first-child,
+        .preview-table td:first-child {
+            width: 14.28%; /* Same width as other columns */
+        }
 
     .preview-table th {
         background: #f5f5f5;

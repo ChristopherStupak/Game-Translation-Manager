@@ -225,9 +225,9 @@ function updatePreview() {
     const languages = csvLanguageOrder.filter(lang => availableLanguages.has(lang));
 
     let html = '<table class="preview-table"><thead><tr>';
-    html += '<th style="width: 200px;">Key</th>';
+    html += '<th>Key</th>';
     languages.forEach(lang => {
-        html += `<th style="width: 150px;">${lang.toUpperCase()}</th>`;
+        html += `<th>${lang.toUpperCase()}</th>`;
     });
     html += '</tr></thead><tbody>';
 
